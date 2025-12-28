@@ -1,0 +1,14 @@
+from sqlalchemy import Table, Column, MetaData, Integer, String, Boolean, DateTime, Date, Float
+
+metadata = MetaData()
+
+{{ table_var_name }} = Table(
+    "{{ table_name }}",
+    metadata,
+{% for column in columns %}
+    Column(
+        "{{ column.name }}",
+        {{ column.column_type }}{% if column.primary_key %}, primary_key=True{% endif %}{% if column.unique %}, unique=True{% endif %}{% if column.index %}, index=True{% endif %}{% if column.nullable is not none %}, nullable={{ column.nullable|lower }}{% endif %}
+    ),
+{% endfor %}
+)

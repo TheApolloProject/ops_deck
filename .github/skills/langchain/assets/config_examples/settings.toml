@@ -1,0 +1,15 @@
+[project]
+name = "langchain-demo"
+environment = "dev"
+
+[models]
+chat_model = "gpt-4o-mini"
+temperature = 0.2
+embedding_model = "text-embedding-3-small"
+
+[rag]
+top_k = 4
+docs_path = "assets/sample_documents"
+
+[logging]
+level = "INFO"

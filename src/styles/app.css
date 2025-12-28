@@ -1,0 +1,247 @@
+"""Base CSS layout for Ops Deck TUI application.
+
+Defines the visual structure and styling for the main dashboard.
+*/
+
+/* Main application container */
+Screen {
+    layout: vertical;
+    background: $surface;
+    color: $text;
+}
+
+/* Header section - displays app title and status */
+#header {
+    dock: top;
+    height: 5;
+    background: $boost;
+    border: thick $accent;
+    color: $text;
+    text-align: center;
+    padding: 1 2;
+}
+
+/* Title in header */
+#title {
+    text-align: center;
+    text-style: bold;
+    color: $accent;
+}
+
+/* Subtitle in header */
+#subtitle {
+    text-align: center;
+    color: $muted;
+    height: 1;
+}
+
+/* Main content area - splits into command panel and output pane */
+#main-content {
+    layout: horizontal;
+    height: 1fr;
+}
+
+/* Left panel - command list and selection */
+#command-panel {
+    width: 30;
+    border: solid $accent;
+    padding: 1;
+    background: $panel;
+}
+
+#command-list {
+    height: 1fr;
+    width: 1fr;
+}
+
+.command-item {
+    padding: 0 1;
+    height: auto;
+}
+
+.command-item:hover {
+    background: $boost;
+    color: $accent;
+}
+
+.command-item.active {
+    background: $accent;
+    color: $surface;
+    text-style: bold;
+}
+
+/* Right panel - output pane */
+#output-pane {
+    layout: vertical;
+    width: 1fr;
+    height: 1fr;
+    border: solid $accent;
+    padding: 1;
+    background: $panel;
+}
+
+#output-header {
+    height: 1;
+    dock: top;
+    padding: 0 1;
+    color: $muted;
+    text-style: dim;
+}
+
+#output-container {
+    width: 1fr;
+    height: 1fr;
+    border: solid $text 50%;
+    padding: 1;
+    background: $surface;
+}
+
+.output-line {
+    padding: 0;
+    width: 1fr;
+    height: auto;
+}
+
+/* Stream-specific output line styling */
+.output-line.stdout {
+    color: $text;
+}
+
+.output-line.stderr {
+    color: $error;
+    text-style: bold;
+}
+
+.output-line.info {
+    color: $info;
+}
+
+.output-line.success {
+    color: $success;
+}
+
+.output-line.error {
+    color: $error;
+    text-style: bold;
+}
+
+/* Footer section - status bar and controls */
+#footer {
+    dock: bottom;
+    height: 3;
+    background: $boost;
+    border: thick $accent;
+    padding: 1 2;
+}
+
+#status-bar {
+    height: 1;
+    width: 1fr;
+    color: $text;
+}
+
+#status-indicator {
+    width: 1fr;
+    height: 1;
+    layout: horizontal;
+}
+
+#status-indicator .status-item {
+    width: 1fr;
+    height: 1;
+    text-align: left;
+    padding: 0 1;
+}
+
+#status-indicator .status-item.idle {
+    color: $muted;
+}
+
+#status-indicator .status-item.running {
+    color: $warning;
+    text-style: blink;
+}
+
+#status-indicator .status-item.success {
+    color: $success;
+}
+
+#status-indicator .status-item.error {
+    color: $error;
+}
+
+#help-bar {
+    height: 1;
+    width: 1fr;
+    color: $muted;
+    text-style: dim;
+    text-align: right;
+    padding: 0 1;
+}
+
+/* Loading spinner */
+.spinner {
+    color: $accent;
+    text-style: bold;
+}
+
+/* Error styling */
+.error-box {
+    border: solid $error;
+    background: $surface;
+    padding: 1;
+}
+
+.error-text {
+    color: $error;
+    text-style: bold;
+}
+
+/* Success styling */
+.success-box {
+    border: solid $success;
+    background: $surface;
+    padding: 1;
+}
+
+.success-text {
+    color: $success;
+    text-style: bold;
+}
+
+/* Modal dialogs */
+Modal {
+    align: center middle;
+}
+
+Modal > Container {
+    width: 80;
+    height: 24;
+    border: solid $accent;
+    background: $panel;
+    padding: 1;
+}
+
+Modal > Container > Label {
+    dock: top;
+    height: 1;
+    color: $accent;
+    text-style: bold;
+}
+
+Modal > Container > Static {
+    height: 1fr;
+    border: solid $text 50%;
+    padding: 1;
+}
+
+Modal > Container > Container {
+    dock: bottom;
+    height: 1;
+    layout: horizontal;
+}
+
+Modal > Container Button {
+    width: 1fr;
+    margin: 0 1;
+}

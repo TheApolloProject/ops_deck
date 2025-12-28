@@ -1,0 +1,20 @@
+from __future__ import annotations
+
+from datetime import datetime
+
+from sqlalchemy import String, Integer, Boolean, DateTime, Date, Float
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+
+class Base(DeclarativeBase):
+    pass
+
+
+class {{ model_name }}(Base):
+    __tablename__ = "{{ table_name }}"
+
+{% for field in fields %}
+    {{ field.name }}: Mapped[{{ field.type_hint }}] = mapped_column(
+        {{ field.column_type }}{% if field.primary_key %}, primary_key=True{% endif %}{% if field.unique %}, unique=True{% endif %}{% if field.index %}, index=True{% endif %}{% if field.nullable is not none %}, nullable={{ field.nullable|lower }}{% endif %}
+    )
+{% endfor %}

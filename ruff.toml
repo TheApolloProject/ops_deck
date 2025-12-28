@@ -1,0 +1,38 @@
+# Ruff configuration for Ops Deck
+
+line-length = 100
+target-version = "py310"
+
+exclude = [
+    ".git",
+    "__pycache__",
+    ".venv",
+    "venv",
+    ".eggs",
+    "*.egg",
+    "build",
+    "dist",
+]
+
+[lint]
+# Enable all recommended rules
+select = [
+    "E",      # pycodestyle errors
+    "F",      # Pyflakes
+    "W",      # pycodestyle warnings
+    "I",      # isort (import sorting)
+    "N",      # pep8-naming
+    "UP",     # pyupgrade
+    "ASYNC",  # flake8-async
+    "C4",     # flake8-comprehensions
+    "PIE",    # flake8-pie
+    "RUF",    # Ruff-specific rules
+]
+
+# Ignore line-too-long (handled by formatter)
+ignore = ["E501"]
+
+[format]
+# Code formatting (black-compatible)
+quote-style = "double"
+indent-style = "space"

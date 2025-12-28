@@ -1,0 +1,14 @@
+Product: Team Knowledge Hub
+
+Summary:
+A web application that centralizes project documentation, internal guides, and decision records.
+
+Goals:
+- Provide a single place to search across project docs.
+- Reduce time spent looking for previous decisions.
+- Make onboarding easier for new team members.
+
+Key Features:
+- Full-text search with filters.
+- Document tags and ownership metadata.
+- Integration with common file storage providers.

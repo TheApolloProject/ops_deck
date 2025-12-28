@@ -1,0 +1,10 @@
+Title: Onboarding Checklist
+
+Items:
+- Request access to source repositories.
+- Join communication channels used by the team.
+- Review architecture diagrams for the main services.
+- Read recent incident reports to understand operational risks.
+
+Notes:
+This checklist is kept intentionally short. Additional context resides in the internal documentation portal.
