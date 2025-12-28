@@ -29,7 +29,7 @@ Build a Python TUI dashboard using Textual that displays a command palette for p
 | II. Non-Blocking Async-First | asyncio workers, no main loop blocking | ✅ PASS | Textual workers + asyncio subprocess |
 | III. Observable Output Streams | stdout/stderr distinct, exit codes shown | ✅ PASS | FR-004, FR-005, FR-006 cover this |
 | IV. Configuration-Driven | External YAML config, validated at startup | ✅ PASS | FR-008, FR-009 require this |
-| V. Simplicity & YAGNI | Core features only, minimal deps | ✅ PASS | Only 2 external deps (Textual, PyYAML) |
+| V. Simplicity & YAGNI | Core features only, minimal deps | ✅ PASS | Only 3 external deps (Textual, PyYAML, Pydantic) |
 
 **Quality Gates Compliance**:
 - Lint Gate: Will configure ruff
@@ -103,7 +103,7 @@ pyproject.toml           # Project metadata and dependencies
 |-----------|-----------------|---------------------|
 | I. Separation of Concerns | contracts/*.md | 3 separate contracts (ConfigLoader, CommandRunner, Messages) enforce layer boundaries |
 | II. Non-Blocking Async-First | research.md §1-2 | Textual @work decorator + asyncio.create_subprocess_shell pattern documented |
-| III. Observable Output Streams | data-model.md | OutputLine entity with StreamType enum; research.md §5 shows dual-stream capture |
+| III. Observable Output Streams | data-model.md, tasks.md T047 | OutputLine entity with StreamType enum; execution logging task added |
 | IV. Configuration-Driven | contracts/config_loader.md | Full validation contract with error types; YAML schema in research.md §3 |
 | V. Simplicity & YAGNI | plan.md Dependencies | Only 3 deps (Textual, PyYAML, Pydantic); no unnecessary abstractions |
 

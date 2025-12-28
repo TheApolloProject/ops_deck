@@ -1,0 +1,25 @@
+from __future__ import annotations
+
+from typing import Iterable
+
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
+from .models import {{ model_name }}
+
+
+class {{ repository_name }}:
+    def __init__(self, session: Session) -> None:
+        self.session = session
+
+    def create(self, obj: {{ model_name }}) -> {{ model_name }}:
+        self.session.add(obj)
+        return obj
+
+    def get(self, id_: int) -> {{ model_name }} | None:
+        stmt = select({{ model_name }}).where({{ model_name }}.id == id_)
+        return self.session.scalar(stmt)
+
+    def list(self) -> Iterable[{{ model_name }}]:
+        stmt = select({{ model_name }})
+        return self.session.scalars(stmt).all()
