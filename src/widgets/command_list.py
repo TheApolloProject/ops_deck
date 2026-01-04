@@ -23,7 +23,7 @@ class CommandListPanel(Container):
         self.selected_index = 0
         self._running_indices: set[int] = set()  # Track which commands are running
 
-    def render_line(self, index: int, command: Command) -> str:  # type: ignore
+    def _format_command_line(self, index: int, command: Command) -> str:
         """Format a command line for display.
 
         Args:
@@ -55,7 +55,7 @@ class CommandListPanel(Container):
             with ScrollableContainer(id="command-scroll"):
                 for i, cmd in enumerate(self.commands):
                     is_selected = i == self.selected_index
-                    line = self.render_line(i, cmd)
+                    line = self._format_command_line(i, cmd)
                     yield Static(
                         line,
                         id=f"cmd_{i}",
@@ -83,7 +83,7 @@ class CommandListPanel(Container):
         for i, cmd in enumerate(self.commands):
             try:
                 item = self.query_one(f"#{f'cmd_{i}'}", Static)
-                line = self.render_line(i, cmd)
+                line = self._format_command_line(i, cmd)
                 item.update(line)
                 if i == self.selected_index:
                     item.add_class("active")

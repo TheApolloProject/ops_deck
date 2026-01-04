@@ -49,7 +49,7 @@ class OpsApp(App):
 
     TITLE = "Ops Deck"
     SUB_TITLE = "CLI Command Dashboard"
-    CSS_PATH = "styles/app.css"
+    CSS_PATH = "../styles/app.css"
 
     # Enable parallel execution by setting exclusive=False on workers
     # This allows multiple commands to run concurrently
@@ -85,9 +85,10 @@ class OpsApp(App):
 
     def on_mount(self) -> None:
         """Handle app initialization."""
-        # Set theme and refresh rate from config if available
-        if self.config:
-            self.theme = self.config.theme
+        # Note: Custom theme setting is currently disabled due to Textual's
+        # strict theme registration requirements. Using default Textual theme.
+        # TODO: Re-enable custom theme support when Textual theme API is clearer
+        pass
 
     def action_quit(self) -> None:  # type: ignore
         """Quit the application."""

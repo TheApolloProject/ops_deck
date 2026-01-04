@@ -156,3 +156,6 @@ Thumbs.db
 
 # Editor backups
 *.orig
+
+# Issues
+/issues/

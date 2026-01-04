@@ -1,4 +1,4 @@
-"""Base CSS layout for Ops Deck TUI application.
+/* Base CSS layout for Ops Deck TUI application.
 
 Defines the visual structure and styling for the main dashboard.
 */
@@ -31,7 +31,7 @@ Screen {
 /* Subtitle in header */
 #subtitle {
     text-align: center;
-    color: $muted;
+    color: $text-muted;
     height: 1;
 }
 
@@ -84,14 +84,14 @@ Screen {
     height: 1;
     dock: top;
     padding: 0 1;
-    color: $muted;
+    color: $text-muted;
     text-style: dim;
 }
 
 #output-container {
     width: 1fr;
     height: 1fr;
-    border: solid $text 50%;
+    border: thick;
     padding: 1;
     background: $surface;
 }
@@ -113,7 +113,7 @@ Screen {
 }
 
 .output-line.info {
-    color: $info;
+    color: $accent;
 }
 
 .output-line.success {
@@ -154,7 +154,7 @@ Screen {
 }
 
 #status-indicator .status-item.idle {
-    color: $muted;
+    color: $text-muted;
 }
 
 #status-indicator .status-item.running {
@@ -173,7 +173,7 @@ Screen {
 #help-bar {
     height: 1;
     width: 1fr;
-    color: $muted;
+    color: $text-muted;
     text-style: dim;
     text-align: right;
     padding: 0 1;
@@ -231,7 +231,7 @@ Modal > Container > Label {
 
 Modal > Container > Static {
     height: 1fr;
-    border: solid $text 50%;
+    border: thick;
     padding: 1;
 }
 
