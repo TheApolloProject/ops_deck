@@ -4,7 +4,9 @@ from textual.app import App, ComposeResult
 from textual.containers import Horizontal
 from textual.widgets import Footer, Header, Static
 
-from ..models import AppConfig, Command
+from ..messages import CommandOutput, ExecutionComplete
+from ..models import AppConfig, Command, OutputLine
+from ..services.command_runner import AsyncCommandRunner
 from .command_list import CommandListPanel
 from .output_pane import OutputPane
 
@@ -67,6 +69,8 @@ class OpsApp(App):
         self.selected_command: Command | None = None
         self._running_command_indices: dict[str, int] = {}  # Track execution ID to command index
         self._error_screen: ErrorScreen | None = None
+        self.runner = AsyncCommandRunner()  # Command execution service
+        self._running_executions: dict[str, int] = {}  # Map execution ID to command index
 
     def compose(self) -> ComposeResult:
         """Create child widgets for the layout."""
@@ -95,10 +99,78 @@ class OpsApp(App):
         self.exit()
 
     def action_execute(self) -> None:
-        """Execute the selected command."""
-        if self.selected_command:
-            # This will be handled by command_selected message
-            pass
+        """Execute the selected command.
+
+        Gets the currently selected command from the command list panel,
+        spawns a background worker to run it asynchronously, and sets up
+        callbacks to display output and handle completion.
+        """
+        # Get command list panel and selected command
+        try:
+            command_list = self.query_one(CommandListPanel)
+            selected_command = command_list.get_selected_command()
+            command_index = command_list.selected_index
+        except Exception:
+            return
+
+        if not selected_command:
+            return
+
+        # Store reference for potential future use
+        self.selected_command = selected_command
+
+        # Get output pane and clear previous output
+        try:
+            output_pane = self.query_one(OutputPane)
+            output_pane.clear_output()
+        except Exception:
+            return
+
+        # Define output callback - called for each output line
+        def output_callback(line: OutputLine) -> None:
+            """Handle output line from command execution."""
+            self.post_message(CommandOutput(line.execution_id, line))
+
+        # Define completion callback - called when execution finishes
+        def completion_callback(execution) -> None:  # type: ignore
+            """Handle command completion."""
+            self.post_message(ExecutionComplete(execution))
+
+        # Create and run worker to execute command
+        def run_command() -> None:
+            """Worker function to run the command asynchronously."""
+            import asyncio
+
+            try:
+                # Run the command with callbacks
+                asyncio.run(
+                    self.runner.run(
+                        selected_command,
+                        output_callback=output_callback,
+                        completion_callback=completion_callback,
+                    )
+                )
+            except Exception as e:
+                # If execution fails, post error and mark as complete
+                from ..models import Execution, ExecutionStatus
+
+                error_execution = Execution(
+                    id=f"exec_error_{command_index}",
+                    command=selected_command,
+                    start_time=None,
+                    end_time=None,
+                    exit_code=None,
+                    status=ExecutionStatus.ERROR,
+                    error_message=str(e),
+                )
+                completion_callback(error_execution)
+
+        # Track execution with command index
+        # We'll update this when we receive the execution ID from the first output
+        self.mark_command_running(command_index, f"exec_{command_index}", True)
+
+        # Spawn the worker (thread=True because run_command is sync and calls asyncio.run())
+        self.run_worker(run_command, thread=True)
 
     def action_navigate_up(self) -> None:
         """Navigate up in command list."""
@@ -129,11 +201,46 @@ class OpsApp(App):
 
             if running:
                 self._running_command_indices[execution_id] = command_index
+                self._running_executions[execution_id] = command_index
                 command_list.set_command_running(command_index, True)
             else:
                 if execution_id in self._running_command_indices:
                     command_list.set_command_running(command_index, False)
                     del self._running_command_indices[execution_id]
+                if execution_id in self._running_executions:
+                    del self._running_executions[execution_id]
+        except Exception:
+            pass
+
+    def on_command_output(self, message: CommandOutput) -> None:
+        """Handle output line from running command.
+
+        Args:
+            message: CommandOutput message with execution ID and output line
+        """
+        try:
+            output_pane = self.query_one(OutputPane)
+            output_pane.add_output_line(message.output_line)
+        except Exception:
+            pass
+
+    def on_execution_complete(self, message: ExecutionComplete) -> None:
+        """Handle command execution completion.
+
+        Args:
+            message: ExecutionComplete message with execution result
+        """
+        try:
+            execution = message.execution
+            output_pane = self.query_one(OutputPane)
+
+            # Update output pane with completion status
+            output_pane.set_execution_complete(execution)
+
+            # Mark command as no longer running
+            if execution.id in self._running_executions:
+                command_index = self._running_executions[execution.id]
+                self.mark_command_running(command_index, execution.id, False)
         except Exception:
             pass
 
