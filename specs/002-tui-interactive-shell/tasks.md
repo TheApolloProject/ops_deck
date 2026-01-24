@@ -126,11 +126,11 @@
 
 ### Implementation for User Story 4
 
-- [ ] T040 [P] [US4] Add conditional routing in on_command_selected() to check interactive flag in src/widgets/app.py
-- [ ] T041 [US4] Preserve async command output history when launching interactive sessions in src/widgets/app.py
-- [ ] T042 [US4] Verify async command execution still works after interactive session ends in src/widgets/app.py
-- [ ] T043 [US4] Add UI indicator showing when command is interactive vs async in src/widgets/command_list.py
-- [ ] T044 [US4] Add session result display that doesn't overwrite async output in src/widgets/app.py
+- [x] T040 [P] [US4] Add conditional routing in on_command_selected() to check interactive flag in src/widgets/app.py
+- [x] T041 [US4] Preserve async command output history when launching interactive sessions in src/widgets/app.py
+- [x] T042 [US4] Verify async command execution still works after interactive session ends in src/widgets/app.py
+- [x] T043 [US4] Add UI indicator showing when command is interactive vs async in src/widgets/command_list.py
+- [x] T044 [US4] Add session result display that doesn't overwrite async output in src/widgets/app.py
 
 **Checkpoint**: User Story 4 complete - Interactive and async workflows coexist seamlessly
 
@@ -140,17 +140,17 @@
 
 **Purpose**: Final touches, documentation, and production readiness
 
-- [ ] T045 [P] Add optional logging_enabled parameter support to run_session() in src/services/interactive_runner.py
-- [ ] T046 [P] Add log_file_path parameter support for session transcripts in src/services/interactive_runner.py
-- [ ] T047 [P] Implement terminal state restoration fallback (os.system("reset")) in src/services/interactive_runner.py
-- [ ] T048 [P] Add session duration calculation property to InteractiveSession in src/models/interactive.py
-- [ ] T049 [P] Add docstrings to all public methods in src/services/interactive_runner.py
-- [ ] T050 [P] Add docstrings to InteractiveSession and SessionType in src/models/interactive.py
-- [ ] T051 [P] Update README.md with interactive shell feature documentation
-- [ ] T052 [P] Add example commands.yaml with interactive command examples
-- [ ] T053 Verify all edge cases from spec.md are handled (kill -9, Ctrl+C, crashed editors)
-- [ ] T054 Run manual acceptance tests for all four user stories
-- [ ] T055 Performance check: Verify TUI suspension <100ms, resumption <50ms
+- [x] T045 [P] Add optional logging_enabled parameter support to run_session() in src/services/interactive_runner.py
+- [x] T046 [P] Add log_file_path parameter support for session transcripts in src/services/interactive_runner.py
+- [x] T047 [P] Implement terminal state restoration fallback (os.system("reset")) in src/services/interactive_runner.py
+- [x] T048 [P] Add session duration calculation property to InteractiveSession in src/models/interactive.py
+- [x] T049 [P] Add docstrings to all public methods in src/services/interactive_runner.py
+- [x] T050 [P] Add docstrings to InteractiveSession and SessionType in src/models/interactive.py
+- [x] T051 [P] Update README.md with interactive shell feature documentation
+- [x] T052 [P] Add example commands.yaml with interactive command examples
+- [x] T053 Verify all edge cases from spec.md are handled (kill -9, Ctrl+C, crashed editors)
+- [x] T054 Run manual acceptance tests for all four user stories
+- [x] T055 Performance check: Verify TUI suspension <100ms, resumption <50ms
 
 **Checkpoint**: Feature complete, documented, and production-ready
 

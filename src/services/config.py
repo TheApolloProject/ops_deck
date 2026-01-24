@@ -10,11 +10,32 @@ import yaml
 from pydantic import ValidationError as PydanticValidationError
 
 from ..exceptions import ConfigError
-from ..models import AppConfig, Command
+from ..models import AppConfig, Command, SessionType
 
 
 class ConfigLoader:
     """Loads and validates configuration from YAML files."""
+
+    @staticmethod
+    def detect_session_type(command: str) -> SessionType:
+        """Auto-detect session type from command string.
+
+        Args:
+            command: Shell command string
+
+        Returns:
+            SessionType enum value
+        """
+        cmd_lower = command.lower()
+
+        if any(shell in cmd_lower for shell in ["bash", "zsh", "sh", "fish"]):
+            return SessionType.SHELL
+        elif any(editor in cmd_lower for editor in ["vim", "nano", "emacs", "micro"]):
+            return SessionType.EDITOR
+        elif any(mux in cmd_lower for mux in ["tmux", "screen"]):
+            return SessionType.MULTIPLEXER
+        else:
+            return SessionType.OTHER
 
     def load(self, path: str) -> dict[str, Any]:
         """Load configuration from a YAML file.
@@ -76,6 +97,9 @@ class ConfigLoader:
             for i, cmd_data in enumerate(commands_data):
                 try:
                     command = Command(**cmd_data)
+                    # Auto-detect session type if not provided and command is interactive
+                    if command.interactive and command.session_type is None:
+                        command.session_type = self.detect_session_type(command.command)
                     commands.append(command)
                 except PydanticValidationError as e:
                     # Extract field information from validation error
@@ -88,7 +112,7 @@ class ConfigLoader:
                     raise ConfigError(
                         f"Invalid command at index {i}: {error_msg}\n"
                         f"Required fields: name, command\n"
-                        f"Optional fields: description, tags, timeout, env"
+                        f"Optional fields: description, tags, timeout, env, interactive, session_type"
                     )
 
             # Load app config
