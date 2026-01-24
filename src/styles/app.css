@@ -43,20 +43,42 @@ Screen {
 
 /* Left panel - command list and selection */
 #command-panel {
-    width: 30;
+    width: 55;
+    height: 1fr;
     border: solid $accent;
-    padding: 1;
+    padding: 0;
     background: $panel;
+    layout: vertical;
 }
 
-#command-list {
+#command-header {
+    height: 1;
+    dock: top;
+    padding: 1 1 0 1;
+    color: $text;
+    text-style: bold;
+}
+
+#command-scroll {
     height: 1fr;
     width: 1fr;
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+}
+
+#command-description {
+    height: auto;
+    dock: bottom;
+    padding: 1;
+    color: $text-muted;
+    text-style: dim;
 }
 
 .command-item {
     padding: 0 1;
     height: auto;
+    width: 1fr;
+    overflow: hidden;
 }
 
 .command-item:hover {

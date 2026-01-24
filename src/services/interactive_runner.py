@@ -1,7 +1,7 @@
 """Interactive subprocess session management for TUI."""
 
-import asyncio
 import os
+import subprocess
 from datetime import datetime
 
 from ..models import Command, InteractiveSession, SessionType
@@ -51,7 +51,7 @@ class InteractiveRunner:
             log_file_path=log_file_path,
         )
 
-        # Suspend TUI
+        # Suspend TUI - this restores terminal to normal mode
         app.suspend()
 
         try:
@@ -59,21 +59,17 @@ class InteractiveRunner:
             env = os.environ.copy()
             env["OPS_DECK_ACTIVE"] = "1"
 
-            # Launch subprocess with TTY inheritance
-            process = await asyncio.create_subprocess_shell(
+            # Launch subprocess with full TTY control
+            # Using subprocess.run instead of asyncio for proper terminal handoff
+            result = subprocess.run(
                 session.command,
-                stdin=None,  # Inherit parent TTY
-                stdout=None,
-                stderr=None,
+                shell=True,
                 env=env,
+                # Don't redirect - let subprocess use the terminal directly
             )
 
-            session.pid = process.pid
-            self._active_sessions.append(session)
-
-            # Wait for subprocess to exit
-            exit_code = await process.wait()
-            session.exit_code = exit_code
+            session.pid = None  # subprocess.run doesn't give us PID after completion
+            session.exit_code = result.returncode
 
         except Exception as e:
             session.error_log.append(f"[ERROR] {type(e).__name__}: {str(e)}")
@@ -83,8 +79,6 @@ class InteractiveRunner:
             # Always restore TUI
             app.resume()
             session.end_time = datetime.now()
-            if session in self._active_sessions:
-                self._active_sessions.remove(session)
 
         return session
 
@@ -95,4 +89,6 @@ class InteractiveRunner:
 
     def get_active_sessions(self) -> list[InteractiveSession]:
         """Get currently running sessions."""
-        return self._active_sessions.copy()
+        # Note: subprocess.run is blocking, so there are no "active" sessions
+        # during execution. This method is kept for API compatibility.
+        return []

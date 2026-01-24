@@ -121,79 +121,77 @@ class OpsApp(App):
 
         # Check if this is an interactive command
         if selected_command.interactive:
-            # Route to interactive runner
-            self._execute_interactive(selected_command, command_index)
+            # Route to interactive runner - must run as async task
+            self.run_worker(
+                self._execute_interactive(selected_command, command_index),
+                exclusive=False,
+            )
         else:
             # Route to async runner (existing behavior)
             self._execute_async(selected_command, command_index)
 
-    def _execute_interactive(self, command: Command, command_index: int) -> None:
+    async def _execute_interactive(self, command: Command, command_index: int) -> None:
         """Execute an interactive command.
 
         Args:
             command: Command to execute
             command_index: Index of command in the command list
         """
-
-        def run_interactive() -> None:
-            """Worker function to run the interactive command."""
-            import asyncio
-
-            try:
-                # Run the interactive session
-                session = asyncio.run(self.interactive_runner.run_session(command, self))
-
-                # Display result
-                if session.exit_code == 0:
-                    self.notify(f"✓ '{command.name}' completed successfully")
-                else:
-                    self.notify(
-                        f"✗ '{command.name}' exited with code {session.exit_code}",
-                        severity="error",
-                    )
-                    for error in session.error_log:
-                        self.log(error)
-
-                # Update output pane with session info
-                try:
-                    output_pane = self.query_one(OutputPane)
-                    output_pane.clear_output()
-                    output_pane.add_line(
-                        OutputLine(
-                            execution_id=f"interactive_{command_index}",
-                            stream_type="stdout",
-                            text=f"Session: {session.command}",
-                            timestamp="",
-                        )
-                    )
-                    output_pane.add_line(
-                        OutputLine(
-                            execution_id=f"interactive_{command_index}",
-                            stream_type="stdout",
-                            text=f"Exit Code: {session.exit_code}",
-                            timestamp="",
-                        )
-                    )
-                    if session.duration is not None:
-                        output_pane.add_line(
-                            OutputLine(
-                                execution_id=f"interactive_{command_index}",
-                                stream_type="stdout",
-                                text=f"Duration: {session.duration:.2f}s",
-                                timestamp="",
-                            )
-                        )
-                except Exception:
-                    pass
-
-            except Exception as e:
-                self.notify(f"Error running interactive session: {str(e)}", severity="error")
-
         # Mark as running
         self.mark_command_running(command_index, f"interactive_{command_index}", True)
 
-        # Spawn the worker
-        self.run_worker(run_interactive, thread=True)
+        try:
+            # Run the interactive session - must be called from async context, not worker
+            session = await self.interactive_runner.run_session(command, self)
+
+            # Display result
+            if session.exit_code == 0:
+                self.notify(f"✓ '{command.name}' completed successfully")
+            else:
+                self.notify(
+                    f"✗ '{command.name}' exited with code {session.exit_code}",
+                    severity="error",
+                )
+                for error in session.error_log:
+                    self.log(error)
+
+            # Update output pane with session info
+            try:
+                output_pane = self.query_one(OutputPane)
+                output_pane.clear_output()
+                output_pane.add_line(
+                    OutputLine(
+                        execution_id=f"interactive_{command_index}",
+                        stream_type="stdout",
+                        text=f"Session: {session.command}",
+                        timestamp="",
+                    )
+                )
+                output_pane.add_line(
+                    OutputLine(
+                        execution_id=f"interactive_{command_index}",
+                        stream_type="stdout",
+                        text=f"Exit Code: {session.exit_code}",
+                        timestamp="",
+                    )
+                )
+                if session.duration is not None:
+                    output_pane.add_line(
+                        OutputLine(
+                            execution_id=f"interactive_{command_index}",
+                            stream_type="stdout",
+                            text=f"Duration: {session.duration:.2f}s",
+                            timestamp="",
+                        )
+                    )
+            except Exception:
+                pass
+
+        except Exception as e:
+            self.notify(f"Error running interactive session: {str(e)}", severity="error")
+        finally:
+            # Mark as completed
+            self.mark_command_running(command_index, f"interactive_{command_index}", False)
 
     def _execute_async(self, command: Command, command_index: int) -> None:
         """Execute an async command (existing behavior).

@@ -3,6 +3,7 @@
 from textual.containers import Container, ScrollableContainer, Vertical
 from textual.reactive import reactive
 from textual.widgets import Label, Static
+from textual.events import Key
 
 from ..models import Command
 
@@ -11,6 +12,11 @@ class CommandListPanel(Container):
     """Panel displaying available commands."""
 
     selected_index: reactive[int] = reactive(0)
+    
+    BINDINGS = [
+        ("up", "navigate_up", "Up"),
+        ("down", "navigate_down", "Down"),
+    ]
 
     def __init__(self, commands: list[Command], *args, **kwargs):
         """Initialize command list panel.
@@ -44,9 +50,9 @@ class CommandListPanel(Container):
         else:
             prefix = "  "  # Empty space
 
-        # Truncate description to fit in 30 column panel
-        desc = command.description[:24] if command.description else command.command[:24]
-        return f"{prefix}{command.name:12} {desc}"
+        # Truncate description to fit in wider 55 column panel
+        desc = command.description[:40] if command.description else command.command[:40]
+        return f"{prefix}{command.name:20} {desc}"
 
     def compose(self):
         """Compose the command list panel."""
@@ -64,6 +70,23 @@ class CommandListPanel(Container):
             # Add description display for selected command
             yield Label("", id="command-description", classes="command-description")
         self._update_description_display()
+
+    def _on_key(self, event: Key) -> None:
+        """Handle keyboard input - prevent ScrollableContainer from consuming arrow keys."""
+        if event.key == "up":
+            self.navigate_up()
+            event.stop()
+        elif event.key == "down":
+            self.navigate_down()
+            event.stop()
+
+    def action_navigate_up(self) -> None:
+        """Action handler for navigate up binding."""
+        self.navigate_up()
+
+    def action_navigate_down(self) -> None:
+        """Action handler for navigate down binding."""
+        self.navigate_down()
 
     def navigate_up(self) -> None:
         """Move selection up."""
@@ -87,6 +110,8 @@ class CommandListPanel(Container):
                 item.update(line)
                 if i == self.selected_index:
                     item.add_class("active")
+                    # Scroll to the selected item
+                    item.scroll_visible()
                 else:
                     item.remove_class("active")
             except Exception:
