@@ -39,11 +39,11 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T005 Create SessionType enum in src/models/interactive.py
-- [ ] T006 Create InteractiveSession dataclass in src/models/interactive.py
-- [ ] T007 Add interactive:bool and session_type:SessionType fields to Command model in src/models/command.py
-- [ ] T008 Update config.py to parse interactive and session_type from YAML in src/services/config.py
-- [ ] T009 Create InteractiveRunner class skeleton in src/services/interactive_runner.py
+- [x] T00- [ ] T005  Create SessionType enum in src/models/interactive.py
+- [x] T00- [ ] T006  Create InteractiveSession dataclass in src/models/interactive.py
+- [x] T00- [ ] T007  Add interactive:bool and session_type:SessionType fields to Command model in src/models/command.py
+- [x] T00- [ ] T008  Update config.py to parse interactive and session_type from YAML in src/services/config.py
+- [x] T00- [ ] T009  Create InteractiveRunner class skeleton in src/services/interactive_runner.py
 - [x] T010 Implement detect_nested_instance() static method in src/services/interactive_runner.py
 - [x] T011 Add nested instance check at startup in src/app.py entry point
 - [x] T012 [P] Add InteractiveSession and SessionType exports to src/models/__init__.py
