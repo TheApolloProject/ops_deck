@@ -24,10 +24,10 @@
 
 **Purpose**: Project initialization and dependency setup
 
-- [ ] T001 Add pexpect>=4.8.0 to pyproject.toml dependencies (optional, can use stdlib subprocess)
-- [ ] T002 Install dependencies with pip install -e ".[dev]"
-- [ ] T003 [P] Verify Python 3.10+ and Textual 0.30+ are available
-- [ ] T004 [P] Create test data directory for interactive session testing
+- [x] T001 Add pexpect>=4.8.0 to pyproject.toml dependencies (optional, can use stdlib subprocess)
+- [x] T002 Install dependencies with pip install -e ".[dev]"
+- [x] T003 [P] Verify Python 3.10+ and Textual 0.30+ are available
+- [x] T004 [P] Create test data directory for interactive session testing
 
 **Checkpoint**: Dependencies installed, environment ready for implementation
 
@@ -44,10 +44,10 @@
 - [ ] T007 Add interactive:bool and session_type:SessionType fields to Command model in src/models/command.py
 - [ ] T008 Update config.py to parse interactive and session_type from YAML in src/services/config.py
 - [ ] T009 Create InteractiveRunner class skeleton in src/services/interactive_runner.py
-- [ ] T010 Implement detect_nested_instance() static method in src/services/interactive_runner.py
-- [ ] T011 Add nested instance check at startup in src/app.py entry point
-- [ ] T012 [P] Add InteractiveSession and SessionType exports to src/models/__init__.py
-- [ ] T013 [P] Add InteractiveRunner export to src/services/__init__.py
+- [x] T010 Implement detect_nested_instance() static method in src/services/interactive_runner.py
+- [x] T011 Add nested instance check at startup in src/app.py entry point
+- [x] T012 [P] Add InteractiveSession and SessionType exports to src/models/__init__.py
+- [x] T013 [P] Add InteractiveRunner export to src/services/__init__.py
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -61,21 +61,21 @@
 
 ### Implementation for User Story 1
 
-- [ ] T014 [P] [US1] Implement run_session() method signature in src/services/interactive_runner.py
-- [ ] T015 [US1] Implement session creation logic in run_session() (create InteractiveSession object with start_time)
-- [ ] T016 [US1] Implement TUI suspension via app.suspend() in run_session()
-- [ ] T017 [US1] Implement subprocess launch with asyncio.create_subprocess_shell in run_session()
-- [ ] T018 [US1] Implement environment variable setting (OPS_DECK_ACTIVE=1) in run_session()
-- [ ] T019 [US1] Implement subprocess wait and exit code capture in run_session()
-- [ ] T020 [US1] Implement TUI restoration via app.resume() in finally block in run_session()
-- [ ] T021 [US1] Implement error logging to session.error_log in run_session()
-- [ ] T022 [US1] Add session tracking to _active_sessions list in InteractiveRunner
-- [ ] T023 [US1] Implement get_active_sessions() method in src/services/interactive_runner.py
-- [ ] T024 [US1] Add command routing logic in app widget to detect interactive=True in src/widgets/app.py
-- [ ] T025 [US1] Call InteractiveRunner.run_session() for interactive commands in src/widgets/app.py
-- [ ] T026 [US1] Display interactive session results (exit code, errors) in TUI in src/widgets/app.py
-- [ ] T027 [US1] Add "Edit Config" command with interactive:true to commands.yaml
-- [ ] T028 [US1] Add "Edit Readme" command with interactive:true session_type:editor to commands.yaml
+- [x] T014 [P] [US1] Implement run_session() method signature in src/services/interactive_runner.py
+- [x] T015 [US1] Implement session creation logic in run_session() (create InteractiveSession object with start_time)
+- [x] T016 [US1] Implement TUI suspension via app.suspend() in run_session()
+- [x] T017 [US1] Implement subprocess launch with asyncio.create_subprocess_shell in run_session()
+- [x] T018 [US1] Implement environment variable setting (OPS_DECK_ACTIVE=1) in run_session()
+- [x] T019 [US1] Implement subprocess wait and exit code capture in run_session()
+- [x] T020 [US1] Implement TUI restoration via app.resume() in finally block in run_session()
+- [x] T021 [US1] Implement error logging to session.error_log in run_session()
+- [x] T022 [US1] Add session tracking to _active_sessions list in InteractiveRunner
+- [x] T023 [US1] Implement get_active_sessions() method in src/services/interactive_runner.py
+- [x] T024 [US1] Add command routing logic in app widget to detect interactive=True in src/widgets/app.py
+- [x] T025 [US1] Call InteractiveRunner.run_session() for interactive commands in src/widgets/app.py
+- [x] T026 [US1] Display interactive session results (exit code, errors) in TUI in src/widgets/app.py
+- [x] T027 [US1] Add "Edit Config" command with interactive:true to commands.yaml
+- [x] T028 [US1] Add "Edit Readme" command with interactive:true session_type:editor to commands.yaml
 
 **Checkpoint**: User Story 1 complete - Users can launch vim/nano, edit files, and return to TUI
 
@@ -89,12 +89,12 @@
 
 ### Implementation for User Story 2
 
-- [ ] T029 [P] [US2] Add working directory preservation logic in run_session() in src/services/interactive_runner.py
-- [ ] T030 [P] [US2] Add environment snapshot capture before session start in src/services/interactive_runner.py
-- [ ] T031 [US2] Verify working directory is inherited by subprocess in run_session()
-- [ ] T032 [US2] Add session_type auto-detection logic for shells (bash, zsh) in src/services/config.py
-- [ ] T033 [US2] Add "Open Shell" command with interactive:true session_type:shell to commands.yaml
-- [ ] T034 [US2] Add "Open Zsh" command with interactive:true session_type:shell to commands.yaml
+- [x] T029 [P] [US2] Add working directory preservation logic in run_session() in src/services/interactive_runner.py
+- [x] T030 [P] [US2] Add environment snapshot capture before session start in src/services/interactive_runner.py
+- [x] T031 [US2] Verify working directory is inherited by subprocess in run_session()
+- [x] T032 [US2] Add session_type auto-detection logic for shells (bash, zsh) in src/services/config.py
+- [x] T033 [US2] Add "Open Shell" command with interactive:true session_type:shell to commands.yaml
+- [x] T034 [US2] Add "Open Zsh" command with interactive:true session_type:shell to commands.yaml
 
 **Checkpoint**: User Story 2 complete - Users can launch interactive shells and run ad-hoc commands
 
@@ -108,11 +108,11 @@
 
 ### Implementation for User Story 3
 
-- [ ] T035 [P] [US3] Add session_type auto-detection for tmux/screen in src/services/config.py
-- [ ] T036 [P] [US3] Add "Open tmux" command with interactive:true session_type:multiplexer to commands.yaml
-- [ ] T037 [P] [US3] Add "Open screen" command with interactive:true session_type:multiplexer to commands.yaml
-- [ ] T038 [US3] Add signal handling verification for complex multiplexers (Ctrl+B, Ctrl+A) in src/services/interactive_runner.py
-- [ ] T039 [US3] Test terminal restoration after tmux crash scenario (add to error_log handling)
+- [x] T035 [P] [US3] Add session_type auto-detection for tmux/screen in src/services/config.py
+- [x] T036 [P] [US3] Add "Open tmux" command with interactive:true session_type:multiplexer to commands.yaml
+- [x] T037 [P] [US3] Add "Open screen" command with interactive:true session_type:multiplexer to commands.yaml
+- [x] T038 [US3] Add signal handling verification for complex multiplexers (Ctrl+B, Ctrl+A) in src/services/interactive_runner.py
+- [x] T039 [US3] Test terminal restoration after tmux crash scenario (add to error_log handling)
 
 **Checkpoint**: User Story 3 complete - Users can launch and manage tmux/screen sessions
 

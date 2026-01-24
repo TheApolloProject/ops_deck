@@ -5,6 +5,8 @@ Represents a CLI command that can be executed.
 
 from pydantic import BaseModel, Field
 
+from .interactive import SessionType
+
 
 class Command(BaseModel):
     """Represents a CLI command configuration."""
@@ -16,6 +18,12 @@ class Command(BaseModel):
     timeout: int = Field(default=300, ge=1, description="Execution timeout in seconds")
     env: dict[str, str] = Field(
         default_factory=dict, description="Environment variables for execution"
+    )
+    interactive: bool = Field(
+        default=False, description="Whether this command requires TTY control"
+    )
+    session_type: SessionType | None = Field(
+        default=None, description="Type of interactive session (if interactive=True)"
     )
 
     class Config:

@@ -7,6 +7,7 @@ from textual.widgets import Footer, Header, Static
 from ..messages import CommandOutput, ExecutionComplete
 from ..models import AppConfig, Command, OutputLine
 from ..services.command_runner import AsyncCommandRunner
+from ..services.interactive_runner import InteractiveRunner
 from .command_list import CommandListPanel
 from .output_pane import OutputPane
 
@@ -70,6 +71,7 @@ class OpsApp(App):
         self._running_command_indices: dict[str, int] = {}  # Track execution ID to command index
         self._error_screen: ErrorScreen | None = None
         self.runner = AsyncCommandRunner()  # Command execution service
+        self.interactive_runner = InteractiveRunner()  # Interactive session service
         self._running_executions: dict[str, int] = {}  # Map execution ID to command index
 
     def compose(self) -> ComposeResult:
@@ -101,9 +103,7 @@ class OpsApp(App):
     def action_execute(self) -> None:
         """Execute the selected command.
 
-        Gets the currently selected command from the command list panel,
-        spawns a background worker to run it asynchronously, and sets up
-        callbacks to display output and handle completion.
+        Routes to interactive or async runner based on command.interactive flag.
         """
         # Get command list panel and selected command
         try:
@@ -119,6 +119,89 @@ class OpsApp(App):
         # Store reference for potential future use
         self.selected_command = selected_command
 
+        # Check if this is an interactive command
+        if selected_command.interactive:
+            # Route to interactive runner
+            self._execute_interactive(selected_command, command_index)
+        else:
+            # Route to async runner (existing behavior)
+            self._execute_async(selected_command, command_index)
+
+    def _execute_interactive(self, command: Command, command_index: int) -> None:
+        """Execute an interactive command.
+
+        Args:
+            command: Command to execute
+            command_index: Index of command in the command list
+        """
+
+        def run_interactive() -> None:
+            """Worker function to run the interactive command."""
+            import asyncio
+
+            try:
+                # Run the interactive session
+                session = asyncio.run(self.interactive_runner.run_session(command, self))
+
+                # Display result
+                if session.exit_code == 0:
+                    self.notify(f"✓ '{command.name}' completed successfully")
+                else:
+                    self.notify(
+                        f"✗ '{command.name}' exited with code {session.exit_code}",
+                        severity="error",
+                    )
+                    for error in session.error_log:
+                        self.log(error)
+
+                # Update output pane with session info
+                try:
+                    output_pane = self.query_one(OutputPane)
+                    output_pane.clear_output()
+                    output_pane.add_line(
+                        OutputLine(
+                            execution_id=f"interactive_{command_index}",
+                            stream_type="stdout",
+                            text=f"Session: {session.command}",
+                            timestamp="",
+                        )
+                    )
+                    output_pane.add_line(
+                        OutputLine(
+                            execution_id=f"interactive_{command_index}",
+                            stream_type="stdout",
+                            text=f"Exit Code: {session.exit_code}",
+                            timestamp="",
+                        )
+                    )
+                    if session.duration is not None:
+                        output_pane.add_line(
+                            OutputLine(
+                                execution_id=f"interactive_{command_index}",
+                                stream_type="stdout",
+                                text=f"Duration: {session.duration:.2f}s",
+                                timestamp="",
+                            )
+                        )
+                except Exception:
+                    pass
+
+            except Exception as e:
+                self.notify(f"Error running interactive session: {str(e)}", severity="error")
+
+        # Mark as running
+        self.mark_command_running(command_index, f"interactive_{command_index}", True)
+
+        # Spawn the worker
+        self.run_worker(run_interactive, thread=True)
+
+    def _execute_async(self, command: Command, command_index: int) -> None:
+        """Execute an async command (existing behavior).
+
+        Args:
+            command: Command to execute
+            command_index: Index of command in the command list
+        """
         # Get output pane and clear previous output
         try:
             output_pane = self.query_one(OutputPane)
@@ -145,7 +228,7 @@ class OpsApp(App):
                 # Run the command with callbacks
                 asyncio.run(
                     self.runner.run(
-                        selected_command,
+                        command,
                         output_callback=output_callback,
                         completion_callback=completion_callback,
                     )
@@ -156,7 +239,7 @@ class OpsApp(App):
 
                 error_execution = Execution(
                     id=f"exec_error_{command_index}",
-                    command=selected_command,
+                    command=command,
                     start_time=None,
                     end_time=None,
                     exit_code=None,

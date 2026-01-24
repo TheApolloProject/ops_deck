@@ -5,7 +5,7 @@ from pathlib import Path
 
 from .exceptions import ConfigError
 from .models import AppConfig, Command
-from .services import ConfigLoader
+from .services import ConfigLoader, InteractiveRunner
 from .widgets.app import OpsApp
 
 
@@ -15,6 +15,12 @@ def main() -> None:
     Loads configuration from commands.yaml and initializes the app.
     If configuration fails, displays an error screen instead of crashing.
     """
+    # Check for nested TUI instance
+    if InteractiveRunner.detect_nested_instance():
+        print("Error: Cannot run ops-deck within an ops-deck session.", file=sys.stderr)
+        print("Exit the current session first.", file=sys.stderr)
+        sys.exit(1)
+
     # Determine config file path
     config_path = Path("commands.yaml")
     config: AppConfig | None = None
